@@ -1,0 +1,18 @@
+{
+    "name": "Sofunny.GPU-Baking-Animation.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:fa9372e20582f4a4e947349b9db0b50e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
