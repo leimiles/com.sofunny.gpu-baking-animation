@@ -1,0 +1,24 @@
+{
+  "name": "com.sofunny.gpu-baking-animation",
+  "description": "gpu baked animation developed for mini-train",
+  "author": "Sofunny",
+  "version": "1.0.0",
+  "unity": "2023.3",
+  "displayName": "GPU Baking Animation",
+  "keywords": [
+    "graphics",
+    "performance",
+    "animation",
+    "instancing"
+  ],
+  "samples":[
+    {
+      "displayName": "Baking Pipeline",
+      "description": "This is for gpu baking working pipeline, include gpu baking utils"
+    },
+    {
+      "displayName": "Demo",
+      "description": "The Demo contains scene, prefab, and test code"
+    }
+  ]
+}
