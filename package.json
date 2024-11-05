@@ -10,15 +10,5 @@
     "performance",
     "animation",
     "instancing"
-  ],
-  "samples":[
-    {
-      "displayName": "Baking Pipeline",
-      "description": "This is for gpu baking working pipeline, include gpu baking utils"
-    },
-    {
-      "displayName": "Demo",
-      "description": "The Demo contains scene, prefab, and test code"
-    }
   ]
 }
