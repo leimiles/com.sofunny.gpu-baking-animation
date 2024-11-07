@@ -89,11 +89,12 @@ Shader "SoFunny/Mini/MiniSkinning"
                 half3 diffuse = ndotl * light.color * light.shadowAttenuation;
                 half3 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv).rgb * _BaseColor.rgb;
                 diffuse = (diffuse + gi) * albedo;
-                half3 outlineColor = Outline(viewDirWS, normalWS) * half3(0.8, 0, 0);
+                //half3 outlineColor = Outline(viewDirWS, normalWS) * half3(0.8, 0, 0);
+                half3 outlineColor = half3(1.0, 0.0, 0.0);
 
                 half4 extraProps = UNITY_ACCESS_INSTANCED_PROP(_GPUSkinning_FrameIndex_PixelSegmentation_arr, _GPUSkinning_Extra_Property);
                 float fading = saturate(1.0 - (_Time.y - extraProps.x) / EXTRA_PROPERTY_DURATION);
-                return half4(diffuse + outlineColor * fading, 1);
+                return half4(saturate(diffuse + outlineColor * fading), 1);
             }
 
             ENDHLSL
