@@ -94,7 +94,7 @@ Shader "SoFunny/Mini/MiniSkinning"
 
                 half4 extraProps = UNITY_ACCESS_INSTANCED_PROP(_GPUSkinning_FrameIndex_PixelSegmentation_arr, _GPUSkinning_Extra_Property);
                 float fading = saturate(1.0 - (_Time.y - extraProps.x) / EXTRA_PROPERTY_DURATION);
-                return half4(saturate(diffuse + outlineColor * fading), 1);
+                return half4(lerp(diffuse, diffuse * outlineColor, fading), 1);
             }
 
             ENDHLSL
