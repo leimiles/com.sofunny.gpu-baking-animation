@@ -74,7 +74,7 @@ public class MileSkinning : MonoBehaviour
 #endif
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (player != null)
         {
