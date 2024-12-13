@@ -91,13 +91,12 @@ Shader "SoFunny/Mini/MiniSkinning"
                 diffuse = (diffuse + gi) * albedo;
                 half outlineArea = Outline(viewDirWS, normalWS * 1.3);
                 half3 outlineColor = half3(0.03, 0.01, 0.01);   // for outline color
-                half3 attackedRed = half3(0.4, 0.0, 0.0);       // for charachters turn red when attacked
+                half3 attackedRed = half3(0.8, 0.0, 0.0);       // for charachters turn red when attacked
 
                 half4 extraProps = UNITY_ACCESS_INSTANCED_PROP(_GPUSkinning_FrameIndex_PixelSegmentation_arr, _GPUSkinning_Extra_Property);     // exposed property sent from c#
                 float fading = saturate(1.0 - (_Time.y - extraProps.x) / EXTRA_PROPERTY_DURATION);      // auto fading
-                half3 finalColor = lerp(diffuse, diffuse * attackedRed, fading);
-
-                return half4(lerp(finalColor, outlineColor, outlineArea), 1);
+                half3 finalColor = lerp(diffuse, outlineColor, outlineArea);
+                return half4( lerp(finalColor, attackedRed, fading), 1);
                 //return half4(lerp(diffuse, diffuse * attackedRed, fading), 1);
 
             }
