@@ -87,6 +87,24 @@ public class GPUSkinningSampler2 : MonoBehaviour
         isSampling = true;
     }
 
+    /// <summary>
+    /// transform a unity bindpose to GPUSkinningBone
+    /// </summary>
+    /// <param name="bones"></param>
+    /// <param name="bones_Transforms"></param>
+    void CollectionBones(List<GPUSkinningBone> gpuSkinningBones, Transform[] skinMeshRenderer_Transforms, Matrix4x4[] bindPoses, GPUSkinningBone gpuSkinningBone_Parent, Transform currentBoneTransform, int currentBoneIndex)
+    {
+        GPUSkinningBone bone = new GPUSkinningBone();
+        gpuSkinningBones.Add(bone);
+        int indexOfBone = System.Array.IndexOf(skinMeshRenderer_Transforms, currentBoneTransform);
+
+        bone.transform = currentBoneTransform;
+        bone.name = currentBoneTransform.name;
+        bone.bindpose = indexOfBone == -1 ? Matrix4x4.identity : bindPoses[indexOfBone];
+        bone.parentBoneIndex = gpuSkinningBone_Parent == null ? -1 : gpuSkinningBones.IndexOf(gpuSkinningBone_Parent);
+
+    }
+
     bool SampleValidation()
     {
         if (isSampling)
