@@ -11,14 +11,16 @@ using UnityEditor;
 public class GPUSkinningSampler2 : MonoBehaviour
 {
 #if UNITY_EDITOR
+    [HideInInspector][SerializeField] string test;
     [HideInInspector][SerializeField] string animName;
     [HideInInspector][SerializeField] Transform rootBone;
-    [HideInInspector][SerializeField] AnimationClip[] animClips;
+    [HideInInspector][SerializeField] public AnimationClip[] animClips;
     [HideInInspector][SerializeField] int[] fpsList;
     [HideInInspector][SerializeField] GPUSkinningAnimation gpuSkinningAnimation_old;
-    [HideInInspector][System.NonSerialized] bool isSampling = false;
-    [HideInInspector][System.NonSerialized] AnimationClip animClip;
-    [HideInInspector][System.NonSerialized] int samplingIndex = -1;
+    [HideInInspector][System.NonSerialized] public bool isSampling = false;
+    [HideInInspector][System.NonSerialized] public AnimationClip animClip;
+    [HideInInspector][System.NonSerialized] public int samplingIndex = -1;
+    [HideInInspector][System.NonSerialized] public int samplingFramesTotal = 0;
     Animator animator;
     RuntimeAnimatorController runtimeAnimatorController;
     SkinnedMeshRenderer skinnedMeshRenderer;
@@ -58,19 +60,31 @@ public class GPUSkinningSampler2 : MonoBehaviour
         ShowDialog("wrong");
     }
 
-    void ResetSampleIndex()
+    public void ResetSampleIndex()
     {
         samplingIndex = 0;
     }
 
-    void StartSample()
+    public bool IsSamplingProgress()
     {
+        return samplingIndex != -1;
+    }
+
+    public void StartSample()
+    {
+
         if (!SampleValidation())
         {
             return;
         }
+
+
         ResetSampleIndex();
+
+        Debug.Log("wawa1");
         Mesh mesh = skinnedMeshRenderer.sharedMesh;
+
+        Debug.Log("wawa2");
         // do i need to create new one?
         gpuSkinningAnimation_new = gpuSkinningAnimation_old == null ? ScriptableObject.CreateInstance<GPUSkinningAnimation>() : gpuSkinningAnimation_old;
         gpuSkinningAnimation_new.name = animName;
@@ -81,10 +95,15 @@ public class GPUSkinningSampler2 : MonoBehaviour
         }
 
         List<GPUSkinningBone> bones_result = new List<GPUSkinningBone>();
-        //CollectionBones(bones_result, skinnedMeshRenderer.bones, mesh.bindposes, null, rootBone, 0);
+        CollectionBones(bones_result, skinnedMeshRenderer.bones, mesh.bindposes, null, rootBone, 0);        // start with rootbone via index of 0 one
 
 
         isSampling = true;
+    }
+
+    public void EndSample()
+    {
+        samplingIndex = -1;
     }
 
     /// <summary>
@@ -92,16 +111,33 @@ public class GPUSkinningSampler2 : MonoBehaviour
     /// </summary>
     /// <param name="bones"></param>
     /// <param name="bones_Transforms"></param>
-    void CollectionBones(List<GPUSkinningBone> gpuSkinningBones, Transform[] skinMeshRenderer_Transforms, Matrix4x4[] bindPoses, GPUSkinningBone gpuSkinningBone_Parent, Transform currentBoneTransform, int currentBoneIndex)
+    void CollectionBones(List<GPUSkinningBone> gpuSkinningBones, Transform[] skinnedMeshRendererBones, Matrix4x4[] skinnedMeshBindPoses, GPUSkinningBone gpuSkinningBone_Parent, Transform currentBoneTransform, int currentBoneIndex)
     {
-        GPUSkinningBone bone = new GPUSkinningBone();
-        gpuSkinningBones.Add(bone);
-        int indexOfBone = System.Array.IndexOf(skinMeshRenderer_Transforms, currentBoneTransform);
+        Debug.Log(skinnedMeshBindPoses.Length + "  ---  " + skinnedMeshBindPoses.Length);
 
-        bone.transform = currentBoneTransform;
-        bone.name = currentBoneTransform.name;
-        bone.bindpose = indexOfBone == -1 ? Matrix4x4.identity : bindPoses[indexOfBone];
-        bone.parentBoneIndex = gpuSkinningBone_Parent == null ? -1 : gpuSkinningBones.IndexOf(gpuSkinningBone_Parent);
+        GPUSkinningBone gpuSkinningBone_Current = new GPUSkinningBone();
+        gpuSkinningBones.Add(gpuSkinningBone_Current);
+        int indexOfBone = System.Array.IndexOf(skinnedMeshRendererBones, currentBoneTransform);
+
+        gpuSkinningBone_Current.transform = currentBoneTransform;
+        gpuSkinningBone_Current.name = currentBoneTransform.name;
+        gpuSkinningBone_Current.bindpose = indexOfBone == -1 ? Matrix4x4.identity : skinnedMeshBindPoses[indexOfBone];
+        gpuSkinningBone_Current.parentBoneIndex = gpuSkinningBone_Parent == null ? -1 : gpuSkinningBones.IndexOf(gpuSkinningBone_Parent);
+
+        if (gpuSkinningBone_Parent != null)
+        {
+            gpuSkinningBone_Parent.childrenBonesIndices[currentBoneIndex] = gpuSkinningBones.IndexOf(gpuSkinningBone_Current);
+        }
+
+        int numOfChildrenBone = currentBoneTransform.childCount;
+        if (numOfChildrenBone > 0)
+        {
+            gpuSkinningBone_Current.childrenBonesIndices = new int[numOfChildrenBone];
+            for (int i = 0; i < numOfChildrenBone; ++i)
+            {
+                CollectionBones(gpuSkinningBones, skinnedMeshRendererBones, skinnedMeshBindPoses, gpuSkinningBone_Current, gpuSkinningBone_Current.transform.GetChild(i), i);
+            }
+        }
 
     }
 
