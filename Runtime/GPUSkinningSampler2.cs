@@ -11,7 +11,6 @@ using UnityEditor;
 public class GPUSkinningSampler2 : MonoBehaviour
 {
 #if UNITY_EDITOR
-    [HideInInspector][SerializeField] string test;
     [HideInInspector][SerializeField] string animName;
     [HideInInspector][SerializeField] Transform rootBone;
     [HideInInspector][SerializeField] public AnimationClip[] animClips;
