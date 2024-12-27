@@ -11,7 +11,7 @@ using UnityEditor;
 public class GPUSkinningSampler2 : MonoBehaviour
 {
 #if UNITY_EDITOR
-    [HideInInspector][SerializeField] string animName;
+    [HideInInspector][SerializeField] string animName = null;
     [HideInInspector][SerializeField] Transform rootBone;
     [HideInInspector][SerializeField] public AnimationClip[] animClips;
     [HideInInspector][SerializeField] int[] fpsList;
@@ -25,8 +25,6 @@ public class GPUSkinningSampler2 : MonoBehaviour
     SkinnedMeshRenderer skinnedMeshRenderer;
     GPUSkinningClip gpuSkinningClip;
     GPUSkinningAnimation gpuSkinningAnimation_new;
-
-
 
     void Awake()
     {
@@ -55,8 +53,12 @@ public class GPUSkinningSampler2 : MonoBehaviour
         {
             return;
         }
+        int framesTotal = (int)(gpuSkinningClip.length * gpuSkinningClip.fps);
+        samplingFramesTotal = framesTotal;
 
-        ShowDialog("wrong");
+        Debug.Log("sampling frames total: " + framesTotal);
+
+        //ShowDialog("wrong");
     }
 
     public void ResetSampleIndex()
@@ -80,29 +82,43 @@ public class GPUSkinningSampler2 : MonoBehaviour
 
         ResetSampleIndex();
 
-        Debug.Log("wawa1");
+
         Mesh mesh = skinnedMeshRenderer.sharedMesh;
 
-        Debug.Log("wawa2");
         // do i need to create new one?
         gpuSkinningAnimation_new = gpuSkinningAnimation_old == null ? ScriptableObject.CreateInstance<GPUSkinningAnimation>() : gpuSkinningAnimation_old;
         gpuSkinningAnimation_new.name = animName;
 
-        if (gpuSkinningAnimation_old)
+        if (gpuSkinningAnimation_old == null)
         {
             gpuSkinningAnimation_new.guid = System.Guid.NewGuid().ToString();
         }
 
         List<GPUSkinningBone> bones_result = new List<GPUSkinningBone>();
         CollectionBones(bones_result, skinnedMeshRenderer.bones, mesh.bindposes, null, rootBone, 0);        // start with rootbone via index of 0 one
+        GPUSkinningBone[] bones_result_array = bones_result.ToArray();
+        GenerateUniqueID(bones_result_array);
+        Debug.Log(bones_result_array[1].childrenBonesIndices.Length);
 
-
-        isSampling = true;
+        //isSampling = true;
     }
 
     public void EndSample()
     {
         samplingIndex = -1;
+    }
+
+    void GenerateUniqueID(GPUSkinningBone[] bones)
+    {
+        if (bones != null && bones.Length > 0)
+        {
+            for (int i = 0; i < bones.Length; ++i)
+            {
+                string hierarchyPathOfBone = MileSkinningUtils.BoneHierarchyPath(bones, i);
+                string guid = MileSkinningUtils.MD5(hierarchyPathOfBone);
+                bones[i].guid = guid;
+            }
+        }
     }
 
     /// <summary>
@@ -112,8 +128,6 @@ public class GPUSkinningSampler2 : MonoBehaviour
     /// <param name="bones_Transforms"></param>
     void CollectionBones(List<GPUSkinningBone> gpuSkinningBones, Transform[] skinnedMeshRendererBones, Matrix4x4[] skinnedMeshBindPoses, GPUSkinningBone gpuSkinningBone_Parent, Transform currentBoneTransform, int currentBoneIndex)
     {
-        Debug.Log(skinnedMeshBindPoses.Length + "  ---  " + skinnedMeshBindPoses.Length);
-
         GPUSkinningBone gpuSkinningBone_Current = new GPUSkinningBone();
         gpuSkinningBones.Add(gpuSkinningBone_Current);
         int indexOfBone = System.Array.IndexOf(skinnedMeshRendererBones, currentBoneTransform);
@@ -132,6 +146,7 @@ public class GPUSkinningSampler2 : MonoBehaviour
         if (numOfChildrenBone > 0)
         {
             gpuSkinningBone_Current.childrenBonesIndices = new int[numOfChildrenBone];
+
             for (int i = 0; i < numOfChildrenBone; ++i)
             {
                 CollectionBones(gpuSkinningBones, skinnedMeshRendererBones, skinnedMeshBindPoses, gpuSkinningBone_Current, gpuSkinningBone_Current.transform.GetChild(i), i);
@@ -213,6 +228,11 @@ public class GPUSkinningSampler2 : MonoBehaviour
     int GetClipFPS(AnimationClip clip, int clipIndex)
     {
         return fpsList[clipIndex] == 0 ? (int)clip.frameRate : fpsList[clipIndex];
+    }
+
+    public bool IsAnimator()
+    {
+        return animator != null;
     }
 
     static void ShowDialog(string msg)
