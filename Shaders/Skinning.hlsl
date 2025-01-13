@@ -40,6 +40,7 @@ inline float4x4 getMatrix(int frameStartIndex, float boneIndex)
     float4x4 mat = float4x4(row0, row1, row2, row3);
     return mat;
 }
+
 inline float4 Skinning(float4 positionOS, float4 texcoord1, float4 texcoord2)
 {
 
@@ -49,6 +50,15 @@ inline float4 Skinning(float4 positionOS, float4 texcoord1, float4 texcoord2)
     float4x4 mat2 = getMatrix(frameStartIndex, texcoord2.x);
     float4x4 mat3 = getMatrix(frameStartIndex, texcoord2.z);
 
+    return mul(mat0, positionOS) * texcoord1.y + mul(mat1, positionOS) * texcoord1.w;
+}
+
+inline float4 Skinning2(float4 positionOS, float4 texcoord1)
+{
+
+    float frameStartIndex = getFrameStartIndex();
+    float4x4 mat0 = getMatrix(frameStartIndex, texcoord1.x);
+    float4x4 mat1 = getMatrix(frameStartIndex, texcoord1.z);
     return mul(mat0, positionOS) * texcoord1.y + mul(mat1, positionOS) * texcoord1.w;
 }
 

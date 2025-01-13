@@ -39,7 +39,6 @@ Shader "SoFunny/Mini/MiniSkinning"
                 half3 normalOS : NORMAL;
                 float2 texcoord0 : TEXCOORD0;
                 float4 texcoord1 : TEXCOORD1;
-                float4 texcoord2 : TEXCOORD2;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -64,8 +63,8 @@ Shader "SoFunny/Mini/MiniSkinning"
                 Varyings o = (Varyings)0;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_TRANSFER_INSTANCE_ID(v, o);
-                v.positionOS = Skinning(v.positionOS, v.texcoord1, v.texcoord2);
-                v.normalOS = Skinning(half4(v.normalOS, 0), v.texcoord1, v.texcoord2).xyz;
+                v.positionOS = Skinning2(v.positionOS, v.texcoord1);
+                v.normalOS = Skinning2(half4(v.normalOS, 0), v.texcoord1).xyz;
                 VertexPositionInputs vpi = GetVertexPositionInputs(v.positionOS.xyz);
                 VertexNormalInputs vni = GetVertexNormalInputs(v.normalOS.xyz);
                 o.positionCS = vpi.positionCS;
@@ -96,7 +95,7 @@ Shader "SoFunny/Mini/MiniSkinning"
                 half4 extraProps = UNITY_ACCESS_INSTANCED_PROP(_GPUSkinning_FrameIndex_PixelSegmentation_arr, _GPUSkinning_Extra_Property);     // exposed property sent from c#
                 float fading = saturate(1.0 - (_Time.y - extraProps.x) / EXTRA_PROPERTY_DURATION);      // auto fading
                 half3 finalColor = lerp(diffuse, outlineColor, outlineArea);
-                return half4( lerp(finalColor, attackedRed, fading), 1);
+                return half4(lerp(finalColor, attackedRed, fading), 1);
                 //return half4(lerp(diffuse, diffuse * attackedRed, fading), 1);
 
             }
