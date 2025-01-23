@@ -53,10 +53,10 @@ Shader "SoFunny/Mini/MiniSkinning"
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseMap_ST;
-                half4 _BaseColor;
-            CBUFFER_END
+            //CBUFFER_START(UnityPerMaterial)
+            float4 _BaseMap_ST;
+            half4 _BaseColor;
+            //CBUFFER_END
             TEXTURE2D(_BaseMap);        SAMPLER(sampler_BaseMap);
             Varyings vert(Attributes v)
             {
