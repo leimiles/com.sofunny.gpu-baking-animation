@@ -47,18 +47,7 @@ public class MileSkinningPlayer
             visible = value;
         }
     }
-    MileSkinningCullingMode cullingMode = MileSkinningCullingMode.CullUpdateTransforms;
-    public MileSkinningCullingMode CullingMode
-    {
-        get
-        {
-            return Application.isPlaying ? cullingMode : MileSkinningCullingMode.AlwaysAnimate;
-        }
-        set
-        {
-            cullingMode = value;
-        }
-    }
+
     public Vector3 Position
     {
         get
@@ -410,7 +399,7 @@ public class MileSkinningPlayer
         lastPlayingClip = currentClip;
         lastPlayingFrameIndex = frameIndex;
         GPUSkinningFrame frame = currentClip.frames[frameIndex];
-        if (Visible || CullingMode == MileSkinningCullingMode.AlwaysAnimate)
+        if (Visible || MileSkinningCullingMode == MileSkinningCullingMode.AlwaysAnimate)
         {
             mileSkinningData.Update(deltaTime, currentMaterial);
             mileSkinningData.UpdatePlayingData(materialPropertyBlock, currentClip, frameIndex);

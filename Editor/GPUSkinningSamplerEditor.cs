@@ -429,7 +429,7 @@ public class GPUSkinningSamplerEditor : Editor
                         preview = previewGo.AddComponent<MileSkinning>();
                         preview.hideFlags = HideFlags.HideAndDontSave;
                         preview.Init(anim, mesh, mtrl, texture);
-                        preview.Player.CullingMode = MileSkinningCullingMode.AlwaysAnimate;
+                        preview.Player.MileSkinningCullingMode = MileSkinningCullingMode.AlwaysAnimate;
                     }
                 }
             }
