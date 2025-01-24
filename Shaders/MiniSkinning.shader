@@ -53,11 +53,12 @@ Shader "SoFunny/Mini/MiniSkinning"
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            //CBUFFER_START(UnityPerMaterial)
-            float4 _BaseMap_ST;
-            half4 _BaseColor;
-            //CBUFFER_END
+            // don't use cbuffer block because it might cause issue with instancing when there are many baking elements
+            uniform float4 _BaseMap_ST;
+            uniform half4 _BaseColor;
+
             TEXTURE2D(_BaseMap);        SAMPLER(sampler_BaseMap);
+
             Varyings vert(Attributes v)
             {
                 Varyings o = (Varyings)0;
